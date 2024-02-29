@@ -27,3 +27,59 @@ SELECT category
 FROM table_2 WHERE rank < 3
 
 -- ex 3
+SELECT COUNT(policy_holder_id)
+FROM (SELECT policy_holder_id
+  , COUNT(case_id)
+FROM callers
+GROUP BY policy_holder_id
+HAVING COUNT(case_id) >= 3
+
+-- ex 4
+SELECT page_id
+FROM pages
+LEFT JOIN page_likes
+USING (page_id)
+WHERE liked_date IS NULL
+ORDER BY page_id
+
+
+-- ex 5
+WITH table_mth AS (
+SELECT user_id
+, EXTRACT(month FROM event_date) AS month
+FROM user_actions
+WHERE EXTRACT(month FROM event_date) = 07
+AND EXTRACT(year FROM event_date) = 2022
+GROUP BY user_id
+, EXTRACT(month FROM event_date)
+)
+, table_pre_mth AS (
+SELECT user_id
+, EXTRACT(month FROM event_date) AS pre_month
+FROM user_actions
+WHERE EXTRACT(month FROM event_date) = 06
+AND EXTRACT(year FROM event_date) = 2022
+GROUP BY user_id
+, EXTRACT(month FROM event_date)
+)
+SELECT month
+, COUNT(user_id) AS monthly_active_users
+FROM table_mth
+LEFT JOIN table_pre_mth
+USING (user_id)
+WHERE pre_month IS NOT NULL
+GROUP BY month
+
+-- ex 6
+select left(cast(trans_date as varchar), 7) as month
+, country
+, count(id) as trans_count
+, sum(case when state = 'approved' then 1 else 0 end) as approved_count
+, sum(amount) as trans_total_amount
+, sum(case when state = 'approved' then amount else 0 end) as approved_total_amount
+from Transactions t1
+group by left(cast(trans_date as varchar), 7)
+, country
+
+  -- ex 7 
+  
