@@ -1,10 +1,12 @@
 -- ex 1
 SELECT COUNT( DISTINCT company_id) as duplicate_companies
 FROM job_listings
-WHERE company_id IN (SELECT company_id
+WHERE company_id IN (
+  SELECT company_id
 FROM job_listings
 GROUP BY company_id
-HAVING COUNT(company_id) > 1)
+HAVING COUNT(company_id) > 1
+  )
 
 -- ex 2
 WITH table_1 AS (
@@ -82,4 +84,78 @@ group by left(cast(trans_date as varchar), 7)
 , country
 
   -- ex 7 
+  With rank_table as (
+    select *
+, rank() over (partition by product_id order by year) as rank
+from Sales
+)
+select product_id
+, year as first_year
+, quantity
+, price
+from rank_table
+where rank = 1
+
+
+-- ex 8
+select customer_id
+from Customer
+group by customer_id
+having count(distinct product_key) = (
+    select count(distinct product_key)
+    from Product
+)
+
+-- ex 9
+select employee_id
+from Employees
+where salary < 30000
+and manager_id not in (
+    select employee_id
+    from Employees )
+order by employee_id
+
+-- ex 10 (trùng bài ex 1)
+
+
+-- ex 11
+(select Users.name as results
+from Users
+join MovieRating
+using (user_id)
+group by Users.name
+order by count(user_id) desc
+, name
+limit 1
+)
+union all
+(select title as results
+from Movies
+join MovieRating
+using (movie_id)
+where extract (month from created_at) = 02
+and extract (year from created_at) = 2020
+group by title
+order by avg(rating) desc
+, title
+limit 1)
+
+
+
+-- ex 12
+with table_1 as (
+select requester_id as id
+from RequestAccepted
+union all
+select accepter_id
+from RequestAccepted
+) 
+select *
+, count(*) as num
+from table_1
+group by id
+order by num DESC
+limit 1
+  
+
   
