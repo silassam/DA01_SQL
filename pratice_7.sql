@@ -50,6 +50,20 @@ WHERE row_number = 1
 ORDER BY transaction_date
 
 -- EX 5 (mình chưa hiểu đề bài này)
+WITH table_1 AS (
+SELECT *
+, LAG(tweet_count, 1) OVER (PARTITION BY user_id ORDER BY tweet_date) AS lag_1
+, LAG(tweet_count, 2) OVER (PARTITION BY user_id ORDER BY tweet_date) AS lag_2
+FROM tweets
+)
+SELECT user_id
+, tweet_date	
+, CASE
+WHEN lag_1 IS NULL AND lag_2 IS NULL THEN ROUND(tweet_count, 2)
+WHEN lag_1 IS NOT NULL AND lag_2 IS NULL THEN ROUND((lag_1 + tweet_count) / 2.0, 2)
+ELSE ROUND((lag_1 + lag_2 + tweet_count) / 3.0, 2)
+END AS rolling_avg_3d
+FROM table_1
 
 
 -- EX 6
