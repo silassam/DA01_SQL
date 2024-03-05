@@ -49,7 +49,7 @@ FROM user_transactions
 WHERE row_number = 1
 ORDER BY transaction_date
 
--- EX 5 (mình chưa hiểu đề bài này)
+-- EX 5
 WITH table_1 AS (
 SELECT *
 , LAG(tweet_count, 1) OVER (PARTITION BY user_id ORDER BY tweet_date) AS lag_1
