@@ -30,3 +30,20 @@ order by id
 
 -- ex 5
 
+-- ex 6
+select Department
+, Employee
+, Salary
+from (
+    select Department.name as Department
+, Employee.name as Employee
+, salary as Salary
+, dense_rank() over (partition by departmentid order by salary desc) as rank
+from Employee
+left join Department
+on Employee.departmentId = Department.id
+) as table_1
+where rank < 4
+
+-- ex 7
+
